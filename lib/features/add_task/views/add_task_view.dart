@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
 import 'package:taskati_app/core/utils/app_colors.dart';
 import 'package:taskati_app/core/utils/text_styles.dart';
 import 'package:taskati_app/core/widgets/custom_button.dart';
@@ -13,6 +14,12 @@ class AddTaskView extends StatefulWidget {
 }
 
 class _AddTaskViewState extends State<AddTaskView> {
+  int selectedIndix = 0;
+  var date = DateFormat('yyyy/MM/dd').format(DateTime.now());
+  String startTime = DateFormat('hh:mm a').format(DateTime.now());
+  String endTime = DateFormat('hh:mm a').format(DateTime.now().add(
+    const Duration(minutes: 30),
+  ));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,6 +47,7 @@ class _AddTaskViewState extends State<AddTaskView> {
             ),
             Gap(5),
             TextFormField(
+              maxLines: 5,
               decoration: InputDecoration(
                 hintText: 'Enter Note here',
               ),
@@ -53,11 +61,28 @@ class _AddTaskViewState extends State<AddTaskView> {
             TextFormField(
               readOnly: true,
               decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.calendar_month,
-                  color: AppColors.primary,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    Icons.calendar_month,
+                    color: AppColors.primary,
+                  ),
+                  onPressed: () {
+                    showDatePicker(
+                            context: context,
+                            firstDate: DateTime.now(),
+                            lastDate:
+                                DateTime.now().add(const Duration(days: 365)),
+                            initialDate: DateTime.now())
+                        .then((value) {
+                      if (value != null) {
+                        setState(() {
+                          date = DateFormat('yyyy/MM/dd').format(value);
+                        });
+                      }
+                    });
+                  },
                 ),
-                //hintText: ,
+                hintText: date,
               ),
             ),
             Gap(10),
@@ -81,19 +106,19 @@ class _AddTaskViewState extends State<AddTaskView> {
                 Expanded(
                     child: TextFormField(
                   decoration: InputDecoration(
-                    // hintText: startTime,
+                    hintText: startTime,
                     suffixIcon: IconButton(
                         onPressed: () {
-                          // await showTimePicker(
-                          //         context: context,
-                          //         initialTime: TimeOfDay.now())
-                          //     .then((value) {
-                          //   if (value != null) {
-                          //     setState(() {
-                          //       startTime = value.format(context);
-                          //     });
-                          //   }
-                          // });
+                          showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.now(),
+                          ).then((value) {
+                            if (value != null) {
+                              setState(() {
+                                startTime = value.format(context);
+                              });
+                            }
+                          });
                         },
                         icon: Icon(
                           Icons.alarm,
@@ -107,21 +132,21 @@ class _AddTaskViewState extends State<AddTaskView> {
                     child: TextFormField(
                   readOnly: true,
                   decoration: InputDecoration(
-                    // hintText: endTime,
+                    hintText: endTime,
                     suffixIcon: IconButton(
                         onPressed: () {
-                          //  await  showTimePicker(
-                          //           context: context,
-                          //           initialTime: TimeOfDay.fromDateTime(
-                          //               DateTime.now()
-                          //                   .add(Duration(minutes: 30))))
-                          //       .then((value) {
-                          //     if (value != null) {
-                          //       setState(() {
-                          //         endTime = value.format(context);
-                          //       });
-                          //     }
-                          //   });
+                          showTimePicker(
+                                  context: context,
+                                  initialTime: TimeOfDay.fromDateTime(
+                                      DateTime.now()
+                                          .add(Duration(minutes: 30))))
+                              .then((value) {
+                            if (value != null) {
+                              setState(() {
+                                endTime = value.format(context);
+                              });
+                            }
+                          });
                         },
                         icon: Icon(
                           Icons.alarm,
@@ -146,12 +171,25 @@ class _AddTaskViewState extends State<AddTaskView> {
                           3,
                           (index) => Padding(
                                 padding: const EdgeInsets.all(3),
-                                child: CircleAvatar(
-                                  radius: 13,
-                                  backgroundColor: AppColors.primary,
-                                  child: Icon(
-                                    Icons.done,
-                                    color: AppColors.white,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedIndix = index;
+                                    });
+                                  },
+                                  child: CircleAvatar(
+                                    radius: 13,
+                                    backgroundColor: index == 0
+                                        ? AppColors.primary
+                                        : index == 1
+                                            ? AppColors.orange
+                                            : AppColors.red,
+                                    child: (index == selectedIndix)
+                                        ? Icon(
+                                            Icons.done,
+                                            color: AppColors.white,
+                                          )
+                                        : SizedBox(),
                                   ),
                                 ),
                               )),
