@@ -11,50 +11,52 @@ class UploadView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          TextButton(
-              onPressed: () {},
-              child: Text(
-                "Done",
-                style: getBodyStyle(context, color: AppColors.primary),
-              ))
-        ],
-      ),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(25.r),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 60,
-                backgroundImage: AssetImage(AssetsIcons.user),
-              ),
-              Gap(10),
-              CustomButton(
-                textColor: AppColors.white,
-                color: AppColors.primary,
+    return SingleChildScrollView(
+      child: Scaffold(
+        appBar: AppBar(
+          actions: [
+            TextButton(
                 onPressed: () {},
-                height: 150.h,
-                text: 'Upload from Camera',
-              ),
-              Gap(5),
-              CustomButton(
-                textColor: AppColors.white,
-                color: AppColors.primary,
-                onPressed: () {},
-                height: 150.h,
-                text: 'Upload from Gallery  ',
-              ),
-              Gap(5),
-              Divider(),
-              Gap(10),
-              TextFormField(
-                decoration: InputDecoration(hintText: 'Enter Your Name'),
-              )
-            ],
+                child: Text(
+                  "Done",
+                  style: getBodyStyle(context, color: AppColors.primary),
+                ))
+          ],
+        ),
+        body: Center(
+          child: Padding(
+            padding: EdgeInsets.all(25.r),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 60,
+                  backgroundImage: AssetImage(AssetsIcons.user),
+                ),
+                Gap(10),
+                CustomButton(
+                  textColor: AppColors.white,
+                  color: AppColors.primary,
+                  onPressed: () {},
+                  height: 150.h,
+                  text: 'Upload from Camera',
+                ),
+                Gap(5),
+                CustomButton(
+                  textColor: AppColors.white,
+                  color: AppColors.primary,
+                  onPressed: () {},
+                  height: 150.h,
+                  text: 'Upload from Gallery  ',
+                ),
+                Gap(5),
+                Divider(),
+                Gap(10),
+                TextFormField(
+                  decoration: InputDecoration(hintText: 'Enter Your Name'),
+                )
+              ],
+            ),
           ),
         ),
       ),
