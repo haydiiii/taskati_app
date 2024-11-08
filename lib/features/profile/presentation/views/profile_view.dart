@@ -1,14 +1,38 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:taskati_app/core/constants/assets_icons.dart';
 import 'package:taskati_app/core/functions/routing.dart';
+import 'package:taskati_app/core/services/local_storage.dart';
 import 'package:taskati_app/core/utils/app_colors.dart';
 import 'package:taskati_app/core/utils/text_styles.dart';
 import 'package:taskati_app/core/widgets/custom_button.dart';
-import 'package:taskati_app/features/profile/presentation/views/widgets/image_modal_bottom_sheet.dart';
+import 'package:taskati_app/features/tasks_view/views/tasks_view.dart';
 
-class ProfileView extends StatelessWidget {
+class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
+
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
+  var nameController = TextEditingController();
+  var formKey = GlobalKey<FormState>();
+  uploadImage(bool isCamera) async {
+    final pickedImage = await ImagePicker()
+        .pickImage(source: isCamera ? ImageSource.camera : ImageSource.gallery);
+    if (pickedImage != null) {
+      AppLocalStorage.cashData(
+        'image',
+        pickedImage.path,
+      );
+    }
+  }
+
+  String path = AppLocalStorage.getCahData('image');
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +45,15 @@ class ProfileView extends StatelessWidget {
             icon: Icon(Icons.sunny),
           ),
         ],
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: AppColors.primary,
+          ),
+          onPressed: () {
+            pushWithReplacment(context, TasksView());
+          },
+        ),
       ),
       body: Center(
         child: Padding(
@@ -33,13 +66,49 @@ class ProfileView extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 60,
-                    backgroundImage: AssetImage(AssetsIcons.user),
+                    backgroundImage: (path != null)
+                        ? FileImage(File(path)) as ImageProvider
+                        : AssetImage(AssetsIcons.user),
                   ),
                   CircleAvatar(
                     child: IconButton(
                       onPressed: () {
-                        // استدعاء دالة showImageSourceOptions بدون استخدام pushTo
-                        showImageSourceOptions(context);
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return SafeArea(
+                              child: Container(
+                                  margin: EdgeInsets.all(10),
+                                  height: 100,
+                                  width: double.infinity,
+                                  child: Column(children: [
+                                    CustomButton(
+                                      width: double.infinity,
+                                      height: 40,
+                                      textColor: AppColors.white,
+                                      color: AppColors.primary,
+                                      onPressed: () {
+                                        uploadImage(true);
+                                        Navigator.pop(context);
+                                      },
+                                      text: 'Upload from Camera',
+                                    ),
+                                    Gap(5),
+                                    CustomButton(
+                                      width: double.infinity,
+                                      height: 40,
+                                      textColor: AppColors.white,
+                                      color: AppColors.primary,
+                                      onPressed: () {
+                                        uploadImage(false);
+                                        Navigator.pop(context);
+                                      },
+                                      text: 'Upload from Gallery  ',
+                                    ),
+                                  ])),
+                            );
+                          },
+                        );
                       },
                       icon: Icon(Icons.camera_alt),
                     ),
@@ -52,7 +121,7 @@ class ProfileView extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    'Haidi Khattab',
+                    AppLocalStorage.getCahData('name'),
                     style: getTitleStyle(context, color: AppColors.primary),
                   ),
                   Spacer(),
@@ -64,7 +133,44 @@ class ProfileView extends StatelessWidget {
                       radius: 19,
                       child: IconButton(
                         onPressed: () {
-                          editName(context);
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              return Form(
+                                key: formKey,
+                                child: SafeArea(
+                                  child: Container(
+                                      margin: EdgeInsets.all(10),
+                                      height: 100,
+                                      width: double.infinity,
+                                      child: Column(children: [
+                                        TextFormField(
+                                            controller: nameController,
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return 'Please Enter Your Name';
+                                              } else {
+                                                return null;
+                                              }
+                                            }),
+                                        Gap(5),
+                                        CustomButton(
+                                          width: double.infinity,
+                                          height: 40,
+                                          textColor: AppColors.white,
+                                          color: AppColors.primary,
+                                          onPressed: () {
+                                            AppLocalStorage.cashData(
+                                                'name', nameController.value);
+                                            Navigator.pop(context);
+                                          },
+                                          text: 'Upload Your Name ',
+                                        ),
+                                      ])),
+                                ),
+                              );
+                            },
+                          );
                         },
                         icon: Icon(
                           Icons.edit,
@@ -84,68 +190,3 @@ class ProfileView extends StatelessWidget {
 }
 
 //////////////showImageSourceOptions////////////////////////
-void showImageSourceOptions(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    builder: (context) {
-      return SafeArea(
-        child: Container(
-            margin: EdgeInsets.all(10),
-            height: 100,
-            width: double.infinity,
-            child: Column(children: [
-              CustomButton(
-                width: double.infinity,
-                height: 40,
-                textColor: AppColors.white,
-                color: AppColors.primary,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                text: 'Upload from Camera',
-              ),
-              Gap(5),
-              CustomButton(
-                width: double.infinity,
-                height: 40,
-                textColor: AppColors.white,
-                color: AppColors.primary,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                text: 'Upload from Gallery  ',
-              ),
-            ])),
-      );
-    },
-  );
-}
-
-////////////////editNameee////////////////////////
-void editName(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    builder: (context) {
-      return SafeArea(
-        child: Container(
-            margin: EdgeInsets.all(10),
-            height: 100,
-            width: double.infinity,
-            child: Column(children: [
-              TextFormField(),
-              Gap(5),
-              CustomButton(
-                width: double.infinity,
-                height: 40,
-                textColor: AppColors.white,
-                color: AppColors.primary,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                text: 'Upload from Gallery  ',
-              ),
-            ])),
-      );
-    },
-  );
-}
