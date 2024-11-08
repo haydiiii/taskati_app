@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
+import 'package:taskati_app/core/functions/routing.dart';
+import 'package:taskati_app/core/services/local_storage.dart';
 import 'package:taskati_app/core/utils/app_colors.dart';
 import 'package:taskati_app/core/utils/text_styles.dart';
 import 'package:taskati_app/core/widgets/custom_button.dart';
+import 'package:taskati_app/features/add_task/data/task_model.dart';
 import 'package:taskati_app/features/add_task/widgets/appbar_add_task.dart';
+import 'package:taskati_app/features/tasks_view/views/tasks_view.dart';
 
 class AddTaskView extends StatefulWidget {
   const AddTaskView({super.key});
@@ -26,6 +30,7 @@ class _AddTaskViewState extends State<AddTaskView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(50), child: AppBaraddTask()),
       body: Padding(
@@ -219,7 +224,22 @@ class _AddTaskViewState extends State<AddTaskView> {
                     height: 50,
                     text: 'Create Task',
                     textColor: AppColors.white,
-                    onPressed: () {},
+                    onPressed: () {
+                      String id =
+                          '${titleController.text}${DateTime.now().toString()}';
+                      AppLocalStorage.cashTaskBox(
+                          id,
+                          TaskModel(
+                              id: id,
+                              endTime: endTime,
+                              color: selectedIndix,
+                              isCompleted: false,
+                              title: titleController.text,
+                              note: noteController.text,
+                              date: date,
+                              startTime: startTime));
+                      pushAndRemoveUntil(context, TasksView());
+                    },
                     color: AppColors.primary,
                   )
                 ],
