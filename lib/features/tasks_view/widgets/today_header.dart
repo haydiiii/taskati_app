@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:taskati_app/core/functions/routing.dart';
 import 'package:taskati_app/core/utils/app_colors.dart';
 import 'package:taskati_app/core/utils/text_styles.dart';
 import 'package:taskati_app/core/widgets/custom_button.dart';
+import 'package:taskati_app/features/add_task/views/add_task_view.dart';
 
 class TodayHeader extends StatelessWidget {
   const TodayHeader({
@@ -29,7 +31,9 @@ class TodayHeader extends StatelessWidget {
           height: 50,
           text: '+add Task',
           textColor: AppColors.white,
-          onPressed: () {},
+          onPressed: () {
+            pushWithReplacment(context, AddTaskView());
+          },
           color: AppColors.primary,
         )
       ],

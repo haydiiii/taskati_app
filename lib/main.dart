@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:taskati_app/core/services/local_storage.dart';
 import 'package:taskati_app/core/utils/app_colors.dart';
-import 'package:taskati_app/features/add_task/views/add_task_view.dart';
-import 'package:taskati_app/features/profile/presentation/views/profile_view.dart';
 import 'package:taskati_app/features/splash/views/splash_view.dart';
 
-void main() {
+void main()async {
+  await Hive.initFlutter();
+  await Hive.openBox('userBox');
+  AppLocalStorage.init();
+
   runApp(const MainApp());
 }
 
@@ -51,7 +55,7 @@ class MainApp extends StatelessWidget {
                 dividerTheme: DividerThemeData(
                     color: AppColors.primary, indent: 20, endIndent: 20)),
             debugShowCheckedModeBanner: false,
-            home: AddTaskView(),
+            home: SplashView(),
           );
         });
   }
